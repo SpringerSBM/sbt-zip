@@ -27,10 +27,12 @@ object Zip extends Plugin {
   }
 
   private def zipTask = {
-    (allTheJars, artifactPath in zip, zipExtraFiles) map {
-      (packages, outputZip, extraFiles) => {
+    (allTheJars, artifactPath in zip, zipExtraFiles, streams) map {
+      (packages, outputZip, extraFiles, streams) => {
         val libs = packages.toSeq.get pair flatRebase("lib")
+        streams.log.info(s"Zipping ${outputZip.getAbsolutePath} ...")
         IO.zip(libs ++ extraFiles, outputZip)
+        streams.log.info("Done zipping.")
         outputZip
       }
     }
