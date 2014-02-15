@@ -12,10 +12,10 @@ object Zip extends Plugin {
     buildDependenciesSettings ++
     ((artifactPath in zip)    :=  asZip((artifactPath in packageBin).value)) ++
     (zip                      <<= zipTask) ++
-    (zipExtraFile             :=  Seq.empty)
+    (zipExtraFiles            :=  Seq.empty)
 
   val zip                     = TaskKey[File]("zip", "Produces a zip with all dependencies of a configuration")
-  val zipExtraFile            = SettingKey[Seq[(File, String)]]("zipExtraFiles", "Extra files (and their paths) which should be added to the zip")
+  val zipExtraFiles           = SettingKey[Seq[(File, String)]]("zipExtraFiles", "Extra files (and their paths) which should be added to the zip")
 
   def zipTaskForConfig(config: Configuration) = {
     inConfig(config)(zipSettings)
@@ -23,11 +23,11 @@ object Zip extends Plugin {
 
   def zipTaskForConfigWithExtraFiles(config: Configuration, files: Seq[(File, String)]) = {
     inConfig(config)(zipSettings) ++
-    ((zipExtraFile in config) := files)
+    ((zipExtraFiles in config) := files)
   }
 
   private def zipTask = {
-    (allTheJars, artifactPath in zip, zipExtraFile) map {
+    (allTheJars, artifactPath in zip, zipExtraFiles) map {
       (packages, outputZip, extraFiles) => {
         val libs = packages.toSeq.get pair flatRebase("lib")
         IO.zip(libs ++ extraFiles, outputZip)
