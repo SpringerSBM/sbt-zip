@@ -2,14 +2,10 @@ package at.danisgre.sbt.zip
 
 import sbt._
 import Keys._
-import DependentProjects._
-import BuildDependencies._
 
 object Zip extends Plugin {
 
   lazy val zipSettings =
-    dependentProjectsSettings ++
-    buildDependenciesSettings ++
     ((artifactPath in zip)    :=  asZip((artifactPath in packageBin).value)) ++
     (zip                      <<= zipTask) ++
     (zipExtraFiles            :=  Seq.empty)
@@ -27,13 +23,13 @@ object Zip extends Plugin {
   }
 
   private def zipTask = {
-    (allTheJars, artifactPath in zip, zipExtraFiles, streams) map {
-      (packages, outputZip, extraFiles, streams) => {
-        val libs = packages.toSeq.get pair flatRebase("lib")
-        streams.log.info(s"Zipping ${outputZip.getAbsolutePath} ...")
-        IO.zip(libs ++ extraFiles, outputZip)
+    (fullClasspath, artifactPath in zip, zipExtraFiles, streams) map {
+      (fullClasspath, artifactPath, extraFiles, streams) => {
+        val libs = fullClasspath.files.get pair flatRebase("lib")
+        streams.log.info(s"Zipping ${artifactPath.getAbsolutePath} ...")
+        IO.zip(libs ++ extraFiles, artifactPath)
         streams.log.info("Done zipping.")
-        outputZip
+        artifactPath
       }
     }
   }

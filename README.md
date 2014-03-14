@@ -9,6 +9,12 @@ All of your dependencies are put into the `lib/` folder. This includes the 'main
 
 Other files can be added by adding to the zipExtraFiles setting.
 
+In order for dependencies to be resolved correctly, you will need to add you your build:
+
+```scala
+exportJars in ThisBuild := true
+```
+
 example usage:
 ```scala
 import at.danisgre.sbt.zip.Zip._
